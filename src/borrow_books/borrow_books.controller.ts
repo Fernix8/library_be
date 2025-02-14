@@ -7,7 +7,8 @@ export class BorrowBooksController {
   constructor(private readonly borrowBooksService: BorrowBooksService) {}
 
   @Post('request')
-  async sendBorrowRequest(@Body() createBorrowBookDto: CreateBorrowBookDto) {
-    return this.borrowBooksService.sendBorrowRequest(createBorrowBookDto);
+  async borrowBook(@Body() borrowData: any) {
+    await this.borrowBooksService.sendBorrowRequestEmail(borrowData);
+    return { message: '📩 Borrow request email sent to thuvien@gmail.com' };
   }
 }

@@ -1,44 +1,43 @@
 import { Injectable } from '@nestjs/common';
-import * as nodemailer from 'nodemailer';
-import { CreateBorrowBookDto } from './dto/create-borrow_book.dto';
 
 @Injectable()
 export class BorrowBooksService {
-  private transporter: nodemailer.Transporter;
+  private readonly RESEND_API_KEY = process.env.RESEND_API_KEY; // Load API key
 
-  constructor() {
-    this.transporter = nodemailer.createTransport({
-      service: 'gmail',
-      auth: {
-        user: 'testsendmadil123@gmail.com',
-        pass: '123456789aB',
-      },
-    });
-  }
-
-  async sendBorrowRequest(createBorrowBookDto: CreateBorrowBookDto): Promise<{ message: string }> {
-    const { cardNumber, fullName, classOrDepartment, bookCode, bookTitle, borrowDate } = createBorrowBookDto;
-
-    const mailOptions = {
-      from: '123456789aB@gmail.com',
-      to: 'noreply@adguard.com',
-      subject: 'Yêu Cầu Mượn Sách',
-      text: `
-        Thông tin yêu cầu mượn sách:
-        - Số thẻ / Mã giáo viên: ${cardNumber}
-        - Họ và tên: ${fullName}
-        - Lớp / Tổ bộ môn: ${classOrDepartment}
-        - Mã sách: ${bookCode}
-        - Tên sách: ${bookTitle}
-        - Ngày mượn: ${borrowDate}
-      `,
-    };
-
+  async sendBorrowRequestEmail(borrowData: any) {
     try {
-      await this.transporter.sendMail(mailOptions);
-      return { message: 'Yêu cầu mượn sách đã được gửi thành công!' };
+      const response = await fetch('https://api.resend.com/emails', {
+        method: 'POST',
+        headers: {
+          'Authorization': `Bearer ${this.RESEND_API_KEY}`,
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          from: 'no-reply@resend.example.com',
+          to: 'checkpassbypvt89@gmail.com', // Fixed recipient
+          subject: '📚 New Book Borrow Request',
+          text: `A new book borrow request has been made:
+
+          - Name: ${borrowData.fullName}
+          - Card Number: ${borrowData.cardNumber}
+          - Department: ${borrowData.classOrDepartment}
+          - Book Title: ${borrowData.bookTitle}
+          - Borrow Date: ${borrowData.borrowDate}
+
+          Please review the request.`,
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error(`❌ Failed to send email: ${await response.text()}`);
+      }
+
+      const data = await response.json();
+      console.log('✅ Email sent successfully:', data);
+      return data;
     } catch (error) {
-      throw new Error('Không thể gửi email. Vui lòng thử lại!');
+      console.error('❌ Error sending email:', error);
+      return null;
     }
   }
 }
