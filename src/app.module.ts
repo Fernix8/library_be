@@ -7,19 +7,10 @@ import { BorrowBooksModule } from './borrow_books/borrow_books.module';
 @Module({
   imports: [
     ConfigModule.forRoot({
-      isGlobal: true, // Load environment variables globally
+      isGlobal: true, // Biến môi trường dùng toàn cục
     }),
-    MongooseModule.forRootAsync({
-      imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        uri: configService.get<string>('MONGO_URI'), // Load from environment variables
-        useNewUrlParser: true,
-        useUnifiedTopology: true,
-      }),
-      inject: [ConfigService],
-    }),
-    BookModule,
-    BorrowBooksModule,
+    MongooseModule.forRoot(process.env.MONGO_URI || "mongodb+srv://boyearnmoney78:KnJCAMkcZVeoRgQL@library.4ysze.mongodb.net/?retryWrites=true&w=majority&appName=library"), // Kết nối MongoDB
+    BookModule, BorrowBooksModule,
   ],
 })
 export class AppModule {}
