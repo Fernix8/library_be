@@ -14,8 +14,13 @@ export class BookController {
   }
 
   @Get()
-  findAll(): Promise<Book[]> {
-    return this.bookService.findAll();
+  async findAll(
+    @Query('page') page: number = 1,
+    @Query('limit') limit: number = 12
+  ): Promise<{ books: Book[], total: number, totalPages: number, currentPage: number }> {
+    const pageNumber = Number(page) || 1; // Ensure page is a valid number
+    const pageSize = Number(limit) || 12; // Ensure limit is a valid number
+    return this.bookService.findAll(pageNumber, pageSize);
   }
 
   @Get('search')
