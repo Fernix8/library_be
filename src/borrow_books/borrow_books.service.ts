@@ -22,28 +22,30 @@ export class BorrowBooksService {
     const mailOptions = {
       from: 'reply@gmail.com',
       to: 'thuvienpct2021@gmail.com',
-      subject: 'New Borrow Book Request',
+      subject: 'Yêu cầu mượn sách mới',
       text: this.formatBorrowRequest(borrowBookDto),
     };
 
     try {
       await this.transporter.sendMail(mailOptions);
-      console.log('Email sent successfully!');
+      console.log('Email đã được gửi thành công!');
     } catch (error) {
-      console.error('Error sending email:', error);
+      console.error('Lỗi khi gửi email:', error);
     }
   }
 
   private formatBorrowRequest(borrowBookDto: CreateBorrowBookDto): string {
     return `
-      A new borrow book request has been submitted:
-
-      - Card Number: ${borrowBookDto.cardNumber}
-      - Full Name: ${borrowBookDto.fullName}
-      - Class/Department: ${borrowBookDto.classOrDepartment}
-      - Book Code: ${borrowBookDto.bookCode}
-      - Book Title: ${borrowBookDto.bookTitle}
-      - Borrow Date: ${borrowBookDto.borrowDate}
+      Một yêu cầu mượn sách mới đã được gửi:
+      - Email người mượn: ${borrowBookDto.cardNumber}
+      - Số điện người mượn: ${borrowBookDto.phone}
+      - Số thẻ: ${borrowBookDto.cardNumber}
+      - Họ và tên: ${borrowBookDto.fullName}
+      - Lớp/Khoa: ${borrowBookDto.classOrDepartment}
+      - Mã sách: ${borrowBookDto.bookId}
+      - Tên sách: ${borrowBookDto.bookTitle}
+      - Ngày mượn: ${borrowBookDto.borrowDate}
+      - Ghi chú: ${borrowBookDto.note}
     `;
   }
 }
