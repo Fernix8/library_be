@@ -1,43 +1,49 @@
 import { Injectable } from '@nestjs/common';
+import * as nodemailer from 'nodemailer';
+import { ConfigService } from '@nestjs/config';
+import { CreateBorrowBookDto } from './dto/create-borrow_book.dto';
 
 @Injectable()
 export class BorrowBooksService {
-  private readonly RESEND_API_KEY = process.env.RESEND_API_KEY; // Load API key
+  private readonly transporter;
 
-  async sendBorrowRequestEmail(borrowData: any) {
+  constructor(private configService: ConfigService) {
+    // Set up Nodemailer transporter using environment variables
+    this.transporter = nodemailer.createTransport({
+      service: 'gmail',
+      auth: {
+        user: this.configService.get<string>('EMAIL_USER'),  // Get email from environment variable
+        pass: this.configService.get<string>('EMAIL_PASS'),  // Get app-specific password from environment variable
+      },
+    });
+  }
+
+  async sendBorrowRequestEmail(borrowBookDto: CreateBorrowBookDto) {
+    const mailOptions = {
+      from: 'reply@gmail.com',
+      to: 'thuvienpct2021@gmail.com',
+      subject: 'New Borrow Book Request',
+      text: this.formatBorrowRequest(borrowBookDto),
+    };
+
     try {
-      const response = await fetch('https://api.resend.com/emails', {
-        method: 'POST',
-        headers: {
-          'Authorization': `Bearer ${this.RESEND_API_KEY}`,
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          from: 'no-reply@resend.example.com',
-          to: 'checkpassbypvt89@gmail.com', // Fixed recipient
-          subject: '📚 New Book Borrow Request',
-          text: `A new book borrow request has been made:
-
-          - Name: ${borrowData.fullName}
-          - Card Number: ${borrowData.cardNumber}
-          - Department: ${borrowData.classOrDepartment}
-          - Book Title: ${borrowData.bookTitle}
-          - Borrow Date: ${borrowData.borrowDate}
-
-          Please review the request.`,
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error(`❌ Failed to send email: ${await response.text()}`);
-      }
-
-      const data = await response.json();
-      console.log('✅ Email sent successfully:', data);
-      return data;
+      await this.transporter.sendMail(mailOptions);
+      console.log('Email sent successfully!');
     } catch (error) {
-      console.error('❌ Error sending email:', error);
-      return null;
+      console.error('Error sending email:', error);
     }
+  }
+
+  private formatBorrowRequest(borrowBookDto: CreateBorrowBookDto): string {
+    return `
+      A new borrow book request has been submitted:
+
+      - Card Number: ${borrowBookDto.cardNumber}
+      - Full Name: ${borrowBookDto.fullName}
+      - Class/Department: ${borrowBookDto.classOrDepartment}
+      - Book Code: ${borrowBookDto.bookCode}
+      - Book Title: ${borrowBookDto.bookTitle}
+      - Borrow Date: ${borrowBookDto.borrowDate}
+    `;
   }
 }
