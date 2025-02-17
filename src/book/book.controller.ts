@@ -24,14 +24,13 @@ export class BookController {
   }
 
   @Get('search')
-  async searchBooks(@Query('q') query: string): Promise<Book[]> {
-    return this.bookService.searchBooks(query);
+  async searchBooks(
+    @Query('query') query: string,
+    @Query('searchBy') searchBy: 'title' | 'author',  // Accept the 'searchBy' query parameter
+  ): Promise<Book[]> {
+    return this.bookService.searchBooks(query, searchBy);  // Pass both query and searchBy to the service
   }
-
-  @Get('search')
-  search(@Query('query') query: string): Promise<Book[]> {
-    return this.bookService.searchBooks(query);
-  }
+  
 
   @Get(':id')
   findOne(@Param('id') id: string): Promise<Book> {

@@ -45,17 +45,20 @@ export class BookService {
     return updatedBook;
   }
 
-  async searchBooks(query: string): Promise<Book[]> {
+  async searchBooks(query: string, searchBy: 'title' | 'author'): Promise<Book[]> {
     if (!query) {
       return [];
     }
 
     const regex = new RegExp(query.trim(), 'i'); // Case-insensitive search
 
+    // Modify the search logic to match the searchBy condition
+    const searchCondition = searchBy === 'title'
+      ? { title: regex }
+      : { author: regex };
+
     return this.bookModel
-      .find({
-        $or: [{ title: regex }, { author: regex }],
-      })
+      .find(searchCondition)  // Use dynamic search condition based on searchBy
       .select('bookCode title author publisher publishedYear') // Select specific fields
       .limit(20) // Limit results for better performance
       .exec();
