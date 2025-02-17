@@ -37,6 +37,14 @@ export class BookService {
     return book;
   }
 
+  async getTop5NewBooks(): Promise<Book[]> {
+    return this.bookModel
+      .find()  // Find all books
+      .sort({ createdAt: -1 })  // Sort by 'createdAt' in descending order (newest first)
+      .limit(5)  // Limit the result to the top 5
+      .exec();  // Execute the query
+  }
+
   async update(id: string, updateBookDto: UpdateBookDto): Promise<Book> {
     const updatedBook = await this.bookModel
       .findByIdAndUpdate(id, updateBookDto, { new: true })

@@ -23,6 +23,11 @@ export class BookController {
     return this.bookService.findAll(pageNumber, pageSize);
   }
 
+  @Get('top5')
+  async getTop5NewBooks(): Promise<Book[]> {
+    return this.bookService.getTop5NewBooks();
+  }
+
   @Get('search')
   async searchBooks(
     @Query('query') query: string,
