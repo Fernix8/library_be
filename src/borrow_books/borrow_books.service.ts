@@ -38,10 +38,10 @@ export class BorrowBooksService {
     return `
       Một yêu cầu mượn sách mới đã được gửi:
       - Email người mượn: ${borrowBookDto.cardNumber}
-      - Số điện người mượn: ${borrowBookDto.phone}
+      - Số điện thoại người mượn: ${borrowBookDto.phone}
       - Số thẻ: ${borrowBookDto.cardNumber}
       - Họ và tên: ${borrowBookDto.fullName}
-      - Lớp/Khoa: ${borrowBookDto.classOrDepartment}
+      - Lớp/Tổ chuyên môn: ${borrowBookDto.classOrDepartment}
       - Mã sách: ${borrowBookDto.bookId}
       - Tên sách: ${borrowBookDto.bookTitle}
       - Ngày mượn: ${borrowBookDto.borrowDate}
