@@ -37,7 +37,7 @@ export class BorrowBooksService {
   private formatBorrowRequest(borrowBookDto: CreateBorrowBookDto): string {
     return `
       Một yêu cầu mượn sách mới đã được gửi:
-      - Email người mượn: ${borrowBookDto.cardNumber}
+      - Email người mượn: ${borrowBookDto.email}
       - Số điện thoại người mượn: ${borrowBookDto.phone}
       - Số thẻ: ${borrowBookDto.cardNumber}
       - Họ và tên: ${borrowBookDto.fullName}
